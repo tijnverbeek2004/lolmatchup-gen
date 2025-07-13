@@ -1,0 +1,22 @@
+# .gitignore
+
+# IDE settings
+.idea/
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment folders
+venv/
+.venv/
+env/
+.env
+
+# Personal utility scripts (add your own here)
+check_env.py
+
+# OS-specific files
+.DS_Store
+Thumbs.db
