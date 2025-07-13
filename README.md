@@ -29,8 +29,8 @@ A command-line tool that provides a complete, AI-generated game plan for counter
 ### 2. Clone the Repository
 Open your terminal and clone this repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/lol-matchup-analyzer.git
-cd lol-matchup-analyzer
+git clone https://github.com/tijnverbeek2004/lolmatchup-gen.git
+cd lolmatchup-gen
 ```
 
 ### 3. Install Dependencies
