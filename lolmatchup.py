@@ -139,10 +139,12 @@ def scrape_matchup_data(role, champion):
 
 # --- AI & Formatting Modules ---
 
+# --- AI & Formatting Modules ---
+
 def get_ai_analysis(role, enemy_champion, api_key, scraped_data):
     """
     Contacts the Google Gemini API. It uses a different prompt depending on
-    whether live scraped data is available.
+    whether live scraped data is available, and customizes tips based on the user's role.
     """
     print(f"🤖 Consulting the AI Oracle...")
     try:
@@ -150,6 +152,59 @@ def get_ai_analysis(role, enemy_champion, api_key, scraped_data):
     except Exception as e:
         print(f"Error configuring Google AI: {e}")
         return None
+
+    # --- NEW: Role-Specific Tip Generation ---
+    # Normalize the user's role input to match our keys.
+    role_map = {
+        "JUNGLE": "JUNGLE", "JGL": "JUNGLE", "ADC": "ADC", "BOTTOM": "ADC",
+        "TOP": "TOP", "MID": "MIDDLE", "MIDDLE": "MIDDLE", "SUPPORT": "SUPPORT", "SUP": "SUPPORT"
+    }
+    normalized_role = role_map.get(role.upper(), "GENERAL")
+
+    # Define role-specific prompts for the AI.
+    role_specific_tips = {
+        "TOP": [
+            "[A sharp tip for early game wave management and trading in the top lane.]",
+            "[A key mid-game tip related to split-pushing or using Teleport for map pressure.]",
+            "[A funny tip about being an unkillable island overlord.]"
+        ],
+        "JUNGLE": [
+            "[A sharp tip about an effective gank path or jungle clear strategy against the enemy.]",
+            "[A key mid-game tip for securing objectives like Dragon or Herald.]",
+            "[A funny tip about appearing out of nowhere to ruin the enemy's day.]"
+        ],
+        "MIDDLE": [
+            "[A sharp tip for early game roaming or maintaining lane priority in mid.]",
+            "[A key mid-game tip about positioning in teamfights as a mid-laner.]",
+            "[A funny tip about making the enemy mid-laner's life a living nightmare.]"
+        ],
+        "ADC": [
+            "[A sharp tip for early game positioning and farming safely in the bot lane.]",
+            "[A key mid-game tip for kiting and dealing maximum damage in teamfights.]",
+            "[A funny tip about being the team's precious, glass-cannon cargo.]"
+        ],
+        "SUPPORT": [
+            "[A sharp tip for early game vision control or setting up plays for your ADC.]",
+            "[A key mid-game tip for peeling for your carries or finding engages.]",
+            "[A funny tip about being the unsung hero who saves everyone.]"
+        ],
+        "GENERAL": [  # Fallback for any other input
+            "[A sharp, actionable tip for the early game.]",
+            "[A key tip for mid-game teamfights.]",
+            "[A final, funny tip on how to mentally dominate the enemy.]"
+        ]
+    }
+    # Select the correct set of tips, or the general ones as a fallback.
+    tips_to_request = role_specific_tips.get(normalized_role, role_specific_tips["GENERAL"])
+
+    # Format the tips into a string to be inserted into the main prompt.
+    pro_tips_prompt_section = f"""
+### Pro Tips ({normalized_role.title()}-Specific)
+- {tips_to_request[0]}
+- {tips_to_request[1]}
+- {tips_to_request[2]}
+"""
+    # --- END of NEW section ---
 
     if scraped_data:
         # Prompt for when we have live data
@@ -159,7 +214,7 @@ def get_ai_analysis(role, enemy_champion, api_key, scraped_data):
 
         prompt = f"""
         You are a snarky but brilliant League of Legends analyst.
-        Use the live data provided to create a concise game plan.
+        Use the live data provided to create a concise game plan for the {role} role.
 
         **Live Data Context:**
         - Enemy: {enemy_champion} ({role})
@@ -178,7 +233,7 @@ def get_ai_analysis(role, enemy_champion, api_key, scraped_data):
         [In one or two sentences, explain WHY this champion counters {enemy_champion}.]
 
         ### Recommended Runes
-        [Suggest a standard and effective rune page for {scraped_data['best_counter']}.]
+        [Suggest a standard and effective rune page for {scraped_data['best_counter']} playing in the {role} role.]
 
         ### Full Build Path (Live Data)
         **Core Items:** {core_build_str}
@@ -187,11 +242,7 @@ def get_ai_analysis(role, enemy_champion, api_key, scraped_data):
 
         ### Build Explanation
         [Briefly explain the build. Why is this core build effective? When would you build the situational items?]
-
-        ### Pro Tips
-        - [A sharp, actionable tip for the early game.]
-        - [A key tip for mid-game teamfights.]
-        - [A final, funny tip on how to mentally dominate the enemy.]
+        {pro_tips_prompt_section}
         """
     else:
         # Fallback prompt for when scraping fails
@@ -206,19 +257,16 @@ def get_ai_analysis(role, enemy_champion, api_key, scraped_data):
         Provide a complete, standard game plan.
 
         ### Counter
-        [Suggest one strong counter.]
+        [Suggest one strong counter for the {role} role.]
         ### Why It Works
         [Explain why.]
         ### Recommended Runes
-        [Suggest a standard rune page.]
+        [Suggest a standard rune page for the counter in the {role} role.]
         ### Full Build Path
         [Suggest a full, 6-item example build including boots.]
         ### Build Explanation
         [Explain the item choices.]
-        ### Pro Tips
-        - [Early game tip.]
-        - [Mid game tip.]
-        - [Funny tip.]
+        {pro_tips_prompt_section}
         """
     try:
         model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
@@ -250,7 +298,7 @@ def print_formatted_response(response_text, has_live_data):
         print(f"--- {title.upper()} ---\n{content}\n")
 
     print("=" * 55)
-    print("GLHF! Now go get those chips. You've earned them.")
+    print("GLHF! I'll see you on the rift!")
     print("=" * 55 + "\n")
 
 
@@ -275,7 +323,7 @@ def main():
             print_formatted_response(ai_response, has_live_data=(scraped_data is not None))
 
     except KeyboardInterrupt:
-        print("\n\nExiting the program. Go get your chips.")
+        print("\n\nExiting the program.")
 
 
 if __name__ == "__main__":
