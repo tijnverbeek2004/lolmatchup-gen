@@ -1,73 +1,157 @@
-# AI-Powered LoL Matchup Dominator
+# League Of Legends Pick Generator
 
-A command-line tool that provides a complete, AI-generated game plan for countering any League of Legends champion. It uses Selenium to scrape live, up-to-date matchup data and feeds it to Google's Gemini API for expert analysis.
+A sleek terminal UI application that provides real-time champion counter picks for League of Legends. Scrapes live matchup data from League of Graphs and displays the top 3 counter champions with their win rates in a beautiful, modern interface.
 
-  <!-- You should replace this with a real screenshot of your app running! -->
+![Before and After](docs/before_after.png)
 
 ## Features
 
-- **Live Data:** Scrapes [League of Graphs](https://www.leagueofgraphs.com) in real-time to find the statistically best counter-pick.
-- **Full Build Paths:** Retrieves the counter's entire item build, including core, boots, and situational options.
-- **AI-Powered Strategy:** Feeds the live data to the Gemini 1.5 Flash model to generate a comprehensive strategy, including rune recommendations, build explanations, and pro tips.
-- **Robust & Resilient:** Gracefully handles scraper failures by falling back to the AI's general knowledge, ensuring you always get a useful response.
-- **Fast & Efficient:** Uses a headless browser with image-loading disabled for maximum speed.
+- **🎨 Modern Terminal UI:** Beautiful, responsive interface built with Textual
+- **⚡ Real-Time Data:** Scrapes live matchup statistics from League of Graphs
+- **🏆 Top Counter Picks:** Shows the top 3 counter champions with win rates
+- **🔍 All Roles Supported:** Works for Top, Jungle, Mid, ADC, and Support
+- **💨 Fast & Efficient:** Headless browser with optimized scraping
+- **📱 Compact Design:** Fits in small terminal windows (1/4 screen size)
+
+## Screenshots
+
+### Before Analysis
+![Before](docs/before.png)
+
+### After Analysis
+![After](docs/after.png)
 
 ## How It Works
 
-1.  **Input:** You provide your role and the enemy champion.
-2.  **Scrape Counter:** The script uses Selenium to navigate to League of Graphs, handle cookie banners, and find the champion with the highest win rate against your opponent.
-3.  **Scrape Build:** It then navigates to the specific matchup page for that counter and scrapes their most common Core Build, Boots, and Final Item Options.
-4.  **Consult AI:** This live data is packaged and sent to the Google Gemini API with a specialized prompt.
-5.  **Generate Output:** The AI returns a detailed, formatted game plan which is printed directly to your console.
+1. **Input:** Enter your role and the enemy champion
+2. **Scrape:** Selenium navigates to League of Graphs and extracts counter data
+3. **Display:** Beautiful table showing the top 3 counters with medal rankings
+4. **Live Data:** Always up-to-date with current patch statistics
 
 ## Setup & Installation
 
 ### 1. Prerequisites
-- Python 3.8 or newer.
-- Git.
+- Python 3.10 or newer
+- Chrome browser installed
+- Git
 
 ### 2. Clone the Repository
-Open your terminal and clone this repository:
 ```bash
-git clone https://github.com/tijnverbeek2004/lolmatchup-gen.git
-cd lolmatchup-gen
+git clone https://github.com/YOUR_USERNAME/lolmatchup.git
+cd lolmatchup
 ```
 
-### 3. Install Dependencies
-Install all the required Python packages using the `requirements.txt` file:
+### 3. Create Virtual Environment (Recommended)
+```bash
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS/Linux
+source .venv/bin/activate
+```
+
+### 4. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set Up Your API Key
-This tool requires a Google AI (Gemini) API key.
-
-- **Get a key:** You can get a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-
-- **Set the key:** The most secure way is to set it as an environment variable.
-    - **Windows:** `setx GOOGLE_API_KEY "YOUR_API_KEY"` (in Command Prompt, then restart the terminal)
-    - **macOS/Linux:** `export GOOGLE_API_KEY="YOUR_API_KEY"` (add this to your `.bashrc` or `.zshrc` file for it to be permanent)
-
-If you don't set the environment variable, the script will prompt you to enter the key every time you run it.
-
-## Usage
-
-Simply run the script from your terminal:
-
+### 5. Run the Application
 ```bash
 python lolmatchup.py
 ```
 
-The script will then ask for your role and the enemy champion.
+## Usage
 
-#### Example:
+1. Launch the application with `python lolmatchup.py`
+2. Enter your role (mid, top, jungle, adc, support)
+3. Enter the enemy champion name
+4. Click "→ Analyze Matchup" or press Enter
+5. Wait a few seconds while data is scraped
+6. View your top 3 counter picks with win rates!
+
+### Keyboard Shortcuts
+- `Tab` - Navigate between input fields
+- `Enter` - Submit analysis
+- `q` - Quit application
+
+## Champion Name Format
+
+Champion names should be entered without spaces or special characters:
+- ✅ `viktor`, `leesin`, `masteryi`, `kaisa`
+- ❌ `Lee Sin`, `Master Yi`, `Kai'Sa`
+
+## Requirements
+
+```txt
+textual>=0.47.0
+selenium>=4.15.0
+webdriver-manager>=4.0.1
 ```
---- Welcome to the AI-Powered LoL Matchup Dominator ---
-Enter your role (e.g., top, jungle, mid, adc, support): jungle
-Enter your enemy in 'jungle': viego
-```
-... and the magic happens.
+
+## Technical Details
+
+### Architecture
+- **UI Framework:** Textual (Python TUI framework)
+- **Web Scraping:** Selenium WebDriver with ChromeDriver
+- **Data Source:** League of Graphs (leagueofgraphs.com)
+- **Design:** Modern CLI aesthetic inspired by Claude CLI and GitHub Copilot
+
+### Scraping Strategy
+The application uses XPath selectors to extract:
+- Champion names from `<span class="name">` elements
+- Win rates from `<div class="progressBarTxt">` elements
+- Handles dynamic content loading with appropriate waits
+- Automatically manages cookie consent overlays
+
+## Troubleshooting
+
+### Text not visible in input fields
+- Make sure you're using the latest version from this repository
+- Try maximizing your terminal window
+- Ensure your terminal supports Unicode characters
+
+### Scraping fails
+- Verify you have Chrome browser installed
+- Check your internet connection
+- The website structure may have changed - create an issue on GitHub
+
+### ChromeDriver issues
+- The app auto-downloads ChromeDriver via `webdriver-manager`
+- If issues persist, manually update: `pip install --upgrade webdriver-manager`
+
+## Roadmap
+
+- [ ] Add more detailed matchup tips
+- [ ] Save favorite matchups
+- [ ] Export results to file
+- [ ] Add champion images/icons
+- [ ] Support for multiple regions
+- [ ] Rune and build recommendations
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Disclaimer
 
-This tool is for informational and entertainment purposes only. It scrapes data from a third-party website (League of Graphs) and uses an AI model for analysis. All data belongs to their respective owners. Don't blame me if you still lose lane.
+This tool is for educational and informational purposes only. It scrapes data from League of Graphs, a third-party website. All data and trademarks belong to their respective owners (Riot Games, League of Graphs). This is an unofficial tool and is not endorsed by or affiliated with Riot Games.
+
+**Use responsibly and respect the website's terms of service.**
+
+## Acknowledgments
+
+- Data provided by [League of Graphs](https://www.leagueofgraphs.com)
+- Built with [Textual](https://github.com/Textualize/textual)
+- Inspired by modern CLI tools like Claude CLI and GitHub Copilot CLI
